@@ -10,7 +10,7 @@ use IO::Socket;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.14} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.15} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift;
@@ -46,6 +46,9 @@ sub subscribe {
       my $return=&{$handler}($last, $point, $config);
       if (defined($return)) {
         $last=$return;
+      } else {
+        #  An undefined return is reserved for future expansion
+        #  most likely a break from the loop
       }
     }
     sleep 1; 
@@ -53,7 +56,7 @@ sub subscribe {
 }
 
 sub default_handler {
-  my $p1=shift(); #last true return or undef if first
+  my $p1=shift(); #last return or undef if first
   my $p2=shift(); #current fix
   my $config=shift(); #configuration data
   print $p2->lat, " ", $p2->lon,"\n";
@@ -240,15 +243,15 @@ Net::GPSD - Provides a perl interface to the gpsd daemon.
 =head1 SYNOPSIS
 
  use Net::GPSD;
- $gps=new Net::GPSD();
- my $point=$gps->get();
+ $gps=new Net::GPSD;
+ my $point=$gps->get;
  print $point->lat, " ", $point->lon, "\n";
 
 or
 
  use Net::GPSD;
- $gps=new Net::GPSD();
- $gps->subscribe();
+ $gps=new Net::GPSD;
+ $gps->subscribe;
 
 =head1 DESCRIPTION
 
@@ -279,7 +282,7 @@ Returns a current point object regardless if there is a fix or not.  Application
 
 =item getsatellitelist
 
-Returns a list of satellite objects.  (maps to gpsd Y command)
+Returns a list of Net::GPSD::Satellite objects.  (maps to gpsd Y command)
 
 =item port
 
@@ -341,27 +344,49 @@ No known bugs.
 
 =head1 EXAMPLES
 
- #!/usr/bin/perl
- use strict;
- use lib './';
  use Net::GPSD;
-
- my $gps=Net::GPSD->new();
- my $data=$gps->get();
- my %fix=('?'=>"Error", 0=>"No Fix", 1=>"Fix", 2=>"DGPS-Corrected Fix");
- print "Net::GPSD Version:", $gps->VERSION, "\n";
- print "gpsd Version:", $data->{'L'}->[1], "\n";
- print "Fix:", $data->{'S'}->[0], "=", $fix{$data->{'S'}->[0]}, "\n";
- print "Lat:", $data->{'P'}->[0], " Lon:", $data->{'P'}->[1], "\n";
- print "Host:", $gps->host, " Port:", $gps->port, "\n";
-
- $gps->subscribe(handler=>\&gps_handler);
-
- sub gps_handler {
-   my $point=shift();
-   print join " ", "Fix", $point->{'S'}->[0], $point->{'P'}->[0], $point->{'P'}->[1], "\n";
-   return $point
+ $gps=new Net::GPSD;
+ my $point=$gps->get;
+ if ($point->fix) {
+   print $point->lat, " ", $point->lon, "\n";
+ } else {
+   print "No fix.\n";
  }
+
+or
+
+ use Net::GPSD;
+ $gps=new Net::GPSD;
+ $gps->subscribe(handler=>\&gpsd_handler,
+                 config=>{key=>"value"});
+ sub gpsd_handler {
+   my $last_return=shift(); #the return from the last call or undef if first
+   my $point=shift(); #current point $point->fix is true!
+   my $config=shift();
+   print $last_return, " ", $point->lat, " ", $point->lon, "\n";
+   return $last_return + 1; #Return a true scalar type e.g. $a, {}, []
+                            #try the interesting return of $point
+ }
+
+=over
+
+=item Example Programs
+
+=begin html
+
+<ul>
+<li><a href="../../bin/example-information">example-information</a></li>
+<li><a href="../../bin/example-get">example-get</a></li>
+<li><a href="../../bin/example-subscribe">example-subscribe</a></li>
+<li><a href="../../bin/example-getsatellitelist">example-getsatellitelist</a></li>
+<li><a href="../../bin/example-tracker">example-tracker</a></li>
+<li><a href="../../bin/example-tracker-http">example-tracker-http</a></li>
+<li><a href="../../bin/example-check">example-check</a></li>
+</ul>
+
+=end html
+
+=back
 
 =head1 AUTHOR
 

@@ -13,23 +13,27 @@ use Getopt::Std;
 use Net::GPSD::Report::http;
 
 my $opt={};
-getopts('i:', $opt);
+getopts('i:s:d:t:', $opt);
 
 my ($host,$port)=split(q{:}, shift()||'');
 $host||=q{localhost};
 $port||=q{2947};
 
-$opt->{'i'}||=int(2 ** 15 + rand(2 ** 15));
+$opt->{'i'}||=int(2 ** 15 + rand(2 ** 15));  #integer
+$opt->{'s'}||=5;   #seconds  50
+$opt->{'d'}||=100; #meters   1000
+$opt->{'t'}||=20;  #meters   200
+
 print "Device:", $opt->{'i'}, " - $host:$port\n";
 
 my $gps=Net::GPSD->new(host=>$host, port=>$port) || die("Error: Cannot connect to the gpsd server");
 
 print join("|", qw{Type Status Time Lat Lon Alt Speed Heading}), "\n";
 my $config={
-            time=>5,              #seconds
-            distance=>100,        #meters
-            track=>20,            #meters
-            device=>$opt->{'i'},  #device id
+            time=>$opt->{'s'},     #seconds
+            distance=>$opt->{'d'}, #meters
+            track=>$opt->{'t'},    #meters
+            device=>$opt->{'i'},   #device id
            };
 
 $gps->subscribe(handler=>\&gpsd_handler,

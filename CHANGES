@@ -1,5 +1,8 @@
 Revision history for Net::GPSD (aka GPS::gpsd before version 0.14)
 
+2006-04-01 v0.15
+  * Updated pod for GPSD.pm mostly just the examples are linked
+
 2006-03-29 v0.14
   * Renamed GPS::gpsd to Net::GPSD
 
