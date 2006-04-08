@@ -7,7 +7,7 @@ package Net::GPSD::Point;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.14} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.17} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift;
@@ -217,7 +217,7 @@ Returns Longitude as in the P report (%f, degrees). (maps to gpsd O command fift
 
 =item latlon
 
-Returns Latitude, Longitude as an array in array context and as a space joined string in scaler context
+Returns Latitude, Longitude as an array in array context and as a space joined string in scalar context
 
 =item altitude aka alt
 
