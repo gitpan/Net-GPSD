@@ -1,5 +1,9 @@
 Revision history for Net::GPSD (aka GPS::gpsd before version 0.14)
 
+2006-04-08 v0.18
+  * shift() warning
+  * fixed test errors
+
 2006-04-08 v0.17
   * Forgot to update versions
   * Updated the CHANGES file

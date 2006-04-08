@@ -10,10 +10,10 @@ use IO::Socket;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.17} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.18} =~ /(\d+)\.(\d+)/);
 
 sub new {
-  my $this = shift;
+  my $this = shift();
   my $class = ref($this) || $this;
   my $self = {};
   bless $self, $class;
@@ -167,14 +167,14 @@ sub track {
   my $time=shift();
   my $distance_meters=$p1->speed * $time;   #meters
   my $earth_polar_circumference_meters_per_degree=6356752.314245 * &PI/180;
-  my $earth_equatorial_circumference_meters_per_degree=6378137 * &PI/180 * cos(deg2rad $p1->lat);
+  my $earth_equatorial_circumference_meters_per_degree=6378137 * &PI/180 * cos(deg2rad($p1->lat));
   # Heading is measured clockwise from the North.  The angles for the math 
   # sin and cos formulas are measured anti-clockwise from the East.  So, 
   # in order to get this correct, we have to shift sin and cos the 90 
   # degrees to cos and -sin.  The anti-clockwise/clockwise change flips 
   # the sign on the sin back to positive.
-  my $distance_lat_meters=$distance_meters * cos(deg2rad $p1->heading); 
-  my $distance_lon_meters=$distance_meters * sin(deg2rad $p1->heading);
+  my $distance_lat_meters=$distance_meters * cos(deg2rad($p1->heading)); 
+  my $distance_lon_meters=$distance_meters * sin(deg2rad($p1->heading));
   #print  $distance_lat_meters, ":", $distance_lon_meters, "\n";
   my $distance_lat_degrees=$distance_lat_meters
                                / $earth_polar_circumference_meters_per_degree;
@@ -191,7 +191,7 @@ sub track {
 
 sub PI {4 * atan2 1, 1;}
 
-sub deg2rad {shift * &PI/180}
+sub deg2rad {shift() * &PI/180}
 
 sub baud {
   my $self = shift();
