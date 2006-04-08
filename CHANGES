@@ -1,5 +1,15 @@
 Revision history for Net::GPSD (aka GPS::gpsd before version 0.14)
 
+2006-04-08 v0.16
+  * Error in track function
+    >   # Heading is measured clockwise from the North.  The angles for the math
+    >   # sin and cos formulas are measured anti-clockwise from the East.  So,
+    >   # in order to get this correct, we have to shift sin and cos the 90
+    >   # degrees to cos and -sin.  The anti-clockwise/clockwise change flips
+    >   # the sign on the sin back to positive.
+    >   my $distance_lat_meters=$distance_meters * cos(deg2rad $p1->heading);
+    >   my $distance_lon_meters=$distance_meters * sin(deg2rad $p1->heading);
+
 2006-04-01 v0.15
   * Updated pod for GPSD.pm mostly just the examples are linked
 

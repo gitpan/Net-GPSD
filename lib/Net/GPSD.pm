@@ -150,12 +150,12 @@ sub distance {
   my $self=shift();
   my $p1=shift();
   my $p2=shift();
-  my $earth_polar_circumference_meters_per_degree=6356752.314245 * 2*&PI/360;
-  my $earth_equatorial_circumference_meters_per_degree=6378137 * 2*&PI/360;
+  my $earth_polar_circumference_meters_per_degree=6356752.314245 * &PI/180;
+  my $earth_equatorial_circumference_meters_per_degree=6378137 * &PI/180;
   my $delta_lat_degrees=$p2->lat - $p1->lat;
   my $delta_lon_degrees=$p2->lon - $p1->lon;
   my $delta_lat_meters=$delta_lat_degrees * $earth_polar_circumference_meters_per_degree;
-  my $delta_lon_meters=$delta_lon_degrees * $earth_equatorial_circumference_meters_per_degree * cos(($p1->lat + $delta_lat_degrees / 2) * &PI / 180);
+  my $delta_lon_meters=$delta_lon_degrees * $earth_equatorial_circumference_meters_per_degree * cos(deg2rad($p1->lat + $delta_lat_degrees / 2));
   #print $delta_lat_meters, ":",  $delta_lon_meters, "\n";
   return sqrt($delta_lat_meters**2 + $delta_lon_meters**2);
 }
@@ -166,10 +166,15 @@ sub track {
   my $p1=shift();
   my $time=shift();
   my $distance_meters=$p1->speed * $time;   #meters
-  my $earth_polar_circumference_meters_per_degree=6356752.314245 * 2*&PI/360;
-  my $earth_equatorial_circumference_meters_per_degree=6378137 * 2*&PI/360 * cos($p1->lat*&PI/180);
-  my $distance_lat_meters=$distance_meters * sin($p1->heading*&PI/180);
-  my $distance_lon_meters=$distance_meters * cos($p1->heading*&PI/180);
+  my $earth_polar_circumference_meters_per_degree=6356752.314245 * &PI/180;
+  my $earth_equatorial_circumference_meters_per_degree=6378137 * &PI/180 * cos(deg2rad $p1->lat);
+  # Heading is measured clockwise from the North.  The angles for the math 
+  # sin and cos formulas are measured anti-clockwise from the East.  So, 
+  # in order to get this correct, we have to shift sin and cos the 90 
+  # degrees to cos and -sin.  The anti-clockwise/clockwise change flips 
+  # the sign on the sin back to positive.
+  my $distance_lat_meters=$distance_meters * cos(deg2rad $p1->heading); 
+  my $distance_lon_meters=$distance_meters * sin(deg2rad $p1->heading);
   #print  $distance_lat_meters, ":", $distance_lon_meters, "\n";
   my $distance_lat_degrees=$distance_lat_meters
                                / $earth_polar_circumference_meters_per_degree;
@@ -185,6 +190,8 @@ sub track {
 }
 
 sub PI {4 * atan2 1, 1;}
+
+sub deg2rad {shift * &PI/180}
 
 sub baud {
   my $self = shift();

@@ -83,6 +83,12 @@ sub lon {
   return $self->longitude(@_);
 }
 
+sub latlon {
+  my $self = shift();
+  my @latlon=($self->latitude, $self->longitude);
+  return wantarray ? @latlon : join(" ", @latlon);
+}
+
 sub altitude {
   my $self = shift();
   if (@_) { $self->{'O'} ->[5] = shift() } #sets value
@@ -208,6 +214,10 @@ Returns Latitude as in the P report (%f, degrees). (maps to gpsd O command fourt
 =item longitude aka lon
 
 Returns Longitude as in the P report (%f, degrees). (maps to gpsd O command fifth data element)
+
+=item latlon
+
+Returns Latitude, Longitude as an array in array context and as a space joined string in scaler context
 
 =item altitude aka alt
 
