@@ -175,7 +175,7 @@ Net::GPSD::Point - Provides an object interface for a gps point.
                       port => 2947
                 );
  my $point=$gps->get(); #$point is a Net::GPSD::Point object
- print $point->latitude, " ", $point->longitude, "\n";
+ print $point->latlon. "\n";
 
 =head1 DESCRIPTION
 

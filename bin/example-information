@@ -15,8 +15,8 @@ $port||=q{2947};
 
 my $gps=Net::GPSD->new(host=>$host, port=>$port) || die("Error: Cannot connect to the gpsd server");
 
-print "Net::GPSD Version:\t", $gps->VERSION, "\n";
-print "gpsd Version:\t\t", $gps->daemon, "\n";
-print "gpsd Commands:\t\t", $gps->commands, "\n";
-print "Host:\t\t\t", $gps->host, "\n";
-print "Port:\t\t\t", $gps->port, "\n";
+print "Net::GPSD Version:\t", $gps->VERSION. "\n";
+print "gpsd Version:\t\t", $gps->daemon. "\n";
+print "gpsd Commands:\t\t", $gps->commands. "\n";
+print "Host:\t\t\t", $gps->host. "\n";
+print "Port:\t\t\t", $gps->port. "\n";

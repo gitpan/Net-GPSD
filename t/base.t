@@ -31,7 +31,7 @@ BEGIN {
     }
 }
 
-BEGIN { plan tests => 42 }
+BEGIN { plan tests => 45 }
 
 # just check that all modules can be compiled
 ok(eval {require Net::GPSD; 1}, 1, $@);
@@ -77,6 +77,9 @@ ok($p1->latitude, 38.865343);
 ok($p1->lat, 38.865343);
 ok($p1->longitude, -77.110069);
 ok($p1->lon, -77.110069);
+ok($p1->latlon."", "38.865343 -77.110069");
+ok(($p1->latlon)[0], 38.865343);
+ok(($p1->latlon)[1], -77.110069);
 ok($p1->altitude, 'o5');
 ok($p1->alt, 'o5');
 ok($p1->errorhorizontal, 'o6');

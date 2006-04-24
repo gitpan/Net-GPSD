@@ -10,7 +10,7 @@ use IO::Socket;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.18} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.19} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift();
@@ -59,7 +59,7 @@ sub default_handler {
   my $p1=shift(); #last return or undef if first
   my $p2=shift(); #current fix
   my $config=shift(); #configuration data
-  print $p2->lat, " ", $p2->lon,"\n";
+  print $p2->latlon. "\n";
   return $p2;
 }
 
@@ -94,7 +94,7 @@ sub retrieve {
     chomp $data;
     return $self->parse($data);
   } else {
-    print "$0: Could not connect to gspd host.\n";
+    warn "$0: Could not connect to gspd host.\n";
     return undef();
   }
 }
@@ -230,7 +230,8 @@ sub daemon {
 
 sub commands {
   my $self = shift();
-  return q2u $self->{'L'}->[2];
+  my $string=q2u $self->{'L'}->[2];
+  return wantarray ? split(//, $string) : $string
 }
 
 sub q2u {
@@ -252,7 +253,7 @@ Net::GPSD - Provides a perl interface to the gpsd daemon.
  use Net::GPSD;
  $gps=new Net::GPSD;
  my $point=$gps->get;
- print $point->lat, " ", $point->lon, "\n";
+ print $point->latlon. "\n";
 
 or
 
@@ -355,7 +356,7 @@ No known bugs.
  $gps=new Net::GPSD;
  my $point=$gps->get;
  if ($point->fix) {
-   print $point->lat, " ", $point->lon, "\n";
+   print $point->latlon. "\n";
  } else {
    print "No fix.\n";
  }
@@ -370,7 +371,7 @@ or
    my $last_return=shift(); #the return from the last call or undef if first
    my $point=shift(); #current point $point->fix is true!
    my $config=shift();
-   print $last_return, " ", $point->lat, " ", $point->lon, "\n";
+   print $last_return, " ", $point->latlon. "\n";
    return $last_return + 1; #Return a true scalar type e.g. $a, {}, []
                             #try the interesting return of $point
  }
