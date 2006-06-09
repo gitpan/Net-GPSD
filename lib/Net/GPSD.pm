@@ -10,7 +10,7 @@ use IO::Socket;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.19} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.22} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift();
@@ -34,11 +34,11 @@ sub initialize {
   }
 }
 
-sub subscribe {
+sub subscribeget {
   my $self = shift();
   my %param = @_;
   my $last=undef();
-  my $handler=$param{'handler'} || \&default_handler;
+  my $handler=$param{'handler'} || \&default_point_handler;
   my $config=$param{'config'} || {};
   while (1) {
     my $point=$self->get();
@@ -47,20 +47,60 @@ sub subscribe {
       if (defined($return)) {
         $last=$return;
       } else {
-        #  An undefined return is reserved for future expansion
-        #  most likely a break from the loop
+        #  An undefined return does not reset the the $last point variable
       }
     }
     sleep 1; 
   }
 }
 
-sub default_handler {
+sub subscribe {
+  my $self = shift();
+  my %param = @_;
+  my $last=undef();
+  my $handler=$param{'handler'} || \&default_point_handler;
+  my $satlisthandler=$param{'satlisthandler'} || \&default_satellitelist_handler;
+  my $config=$param{'config'} || {};
+  my $sock = IO::Socket::INET->new(PeerAddr=>$self->host,
+                                   PeerPort=>$self->port);
+  $sock->send("W\n");
+  my $data;
+  my $point;
+  while (defined($_=$sock->getline)) {
+    if (m/,O=/) {
+      $point=Net::GPSD::Point->new($self->parse($_));
+      my $return=&{$handler}($last, $point, $config);
+      $last=$return if (defined($return));
+    } elsif (m/,W=/) {
+    } elsif (m/,Y=/) {
+    } else {
+      warn "Unknown: $_\n";
+    }
+  }
+}
+
+sub default_point_handler {
   my $p1=shift(); #last return or undef if first
   my $p2=shift(); #current fix
   my $config=shift(); #configuration data
   print $p2->latlon. "\n";
   return $p2;
+}
+
+sub default_satellitelist_handler {
+  my $sl=shift();
+  my $i=0;
+  print join("\t", qw{Count PRN ELEV Azim SNR USED}), "\n";
+  foreach (@$sl) {
+    print join "\t", ++$i,
+                     $_->prn,
+                     $_->elev,
+                     $_->azim,
+                     $_->snr,
+                     $_->used;
+    print "\n";
+  }
+  return 1;
 }
 
 sub getsatellitelist {
@@ -87,10 +127,9 @@ sub retrieve {
   my $self=shift();
   my $string=shift();
   my $sock=$self->open();
-  my $data='';
   if (defined($sock)) {
     $sock->send($string) or die("Error: $!");
-    $sock->recv($data, 256); #Not sure if 256 is good here!
+    my $data=$sock->getline;
     chomp $data;
     return $self->parse($data);
   } else {
@@ -365,9 +404,9 @@ or
 
  use Net::GPSD;
  $gps=new Net::GPSD;
- $gps->subscribe(handler=>\&gpsd_handler,
+ $gps->subscribe(handler=>\&point_handler,
                  config=>{key=>"value"});
- sub gpsd_handler {
+ sub point_handler {
    my $last_return=shift(); #the return from the last call or undef if first
    my $point=shift(); #current point $point->fix is true!
    my $config=shift();

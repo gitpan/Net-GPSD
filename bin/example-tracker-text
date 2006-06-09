@@ -12,7 +12,7 @@ use Net::GPSD;
 use Getopt::Std;
 
 my $opt={};
-getopts('s:d:t:D:z:', $opt);
+getopts('s:d:t:D:z:P:', $opt);
 
 my ($host,$port)=split(q{:}, shift()||'');
 $host||=q{localhost};
@@ -23,6 +23,13 @@ $opt->{'d'}||=1000; #meters   1000
 $opt->{'t'}||=200;  #meters   200
 $opt->{'D'}||=0;    #debug    0=off
 $opt->{'z'}||=0.75; #m/s      zero speed threshold
+$opt->{'P'}||='';   #filename pid filename
+
+if ($opt->{'P'}) {
+  open(PID, ">".$opt->{'P'}) || die;
+  print PID "$$\n";
+  close(PID);
+}
 
 my $gps=Net::GPSD->new(host=>$host, port=>$port) || die("Error: Cannot connect to the gpsd server");
 
@@ -39,8 +46,29 @@ $gps->subscribe(handler=>\&gpsd_handler,
                 config=>$config);
 
 sub report {
+  my $lastpoint=shift();
   my $point=shift();
   my $config=shift();
+  my $g=Net::GPSD->new(do_not_init=>1);
+  my $debug=$config->{'debug'};
+  if ($config->{'report'} and $config->{'type'} ne "first" and $debug>4) {
+    my @point=$g->interpolate($lastpoint, $point);
+    foreach (@point) {
+      print join "|", map {defined $_?$_:''} 
+                      '0',
+                      'interpolate',
+                      '',
+                      $_->status,
+                      $_->time,
+                      $_->lat,
+                      $_->lon,
+                      $_->alt,
+                      $_->speed,
+                      $_->heading,
+                      "\n";
+
+    }
+  }
   print join "|", map {defined $_?$_:''} 
                   $config->{'report'},
                   $config->{'type'},
@@ -67,7 +95,7 @@ sub gpsd_handler {
     $config->{'type'}="first";
     $config->{'report'}="1";
     $config->{'data'}="0";
-    report($p2, $config);
+    report($p1, $p2, $config);
     return $p2;
   } else {
     my $dt=$gps->time($p1, $p2);
@@ -75,7 +103,7 @@ sub gpsd_handler {
       $config->{'type'}="time";
       $config->{'report'}="1";
       $config->{'data'}=$gps->distance($p1, $p2);;
-      report($p2, $config);
+      report($p1, $p2, $config);
       return $p2;
     } else {
       my $dd=$gps->distance($p1, $p2);
@@ -83,7 +111,7 @@ sub gpsd_handler {
         $config->{'type'}="distance";
         $config->{'report'}="1";
         $config->{'data'}=$dd;
-        report($p2, $config);
+        report($p1, $p2, $config);
         return $p2;
       } else {
         my $p3=$gps->track($p1, $dt);
@@ -92,20 +120,20 @@ sub gpsd_handler {
           $config->{'type'}="predicted";
           $config->{'report'}="0";
           $config->{'data'}=$dt;
-          report($p3, $config);
+          report($p1, $p3, $config);
         }
         if ($dt > $config->{'track'}) {
           $config->{'type'}="track";
           $config->{'report'}="1";
           $config->{'data'}=$dd;
-          report($p2, $config);
+          report($p1, $p2, $config);
           return $p2;
         } else {
           if ($debug>1) {
             $config->{'type'}="filtered";
             $config->{'report'}="0";
             $config->{'data'}='';
-            report($p2, $config);
+            report($p1, $p2, $config);
           }
           return undef();
         }

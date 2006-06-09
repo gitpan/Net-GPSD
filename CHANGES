@@ -1,5 +1,20 @@
 Revision history for Net::GPSD (aka GPS::gpsd before version 0.14)
 
+2006-06-08 v0.22
+  * modified subscribe method to use gpsd watcher mode vs. poll mode
+
+2006-06-08 v0.21
+  * updated example-tracker-text
+
+2006-06-08 v0.20
+  * Scrapped development concerning Math::Bezier
+
+2006-04-23 v0.19
+  * added example-tracker-text
+  * added Point latlon method
+  * added wantarray capability to commands method
+  * changed a connection error print from stdout to a warn on stderr
+
 2006-04-08 v0.18
   * shift() warning
   * fixed test errors
