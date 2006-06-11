@@ -10,7 +10,7 @@ use IO::Socket;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.22} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.23} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift();
@@ -69,10 +69,14 @@ sub subscribe {
   while (defined($_=$sock->getline)) {
     if (m/,O=/) {
       $point=Net::GPSD::Point->new($self->parse($_));
-      my $return=&{$handler}($last, $point, $config);
-      $last=$return if (defined($return));
+      $point->status(defined($point->tag) ? (defined($point->alt) ? 3 : 2) : 0);
+      if ($point->fix) {
+        my $return=&{$handler}($last, $point, $config);
+        $last=$return if (defined($return));
+      }
     } elsif (m/,W=/) {
     } elsif (m/,Y=/) {
+    } elsif (m/,X=/) {
     } else {
       warn "Unknown: $_\n";
     }
