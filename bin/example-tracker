@@ -61,7 +61,7 @@ sub report {
   my $point=$data->{'point'};
   print join "|", map {defined $_?$_:''}
                   $data->{'type'},
-                  $point->status,
+                  $point->mode,
                   $point->time,
                   $point->lat,
                   $point->lon,

@@ -44,7 +44,7 @@ sub report {
   my $config=shift();
   print join "|", map {defined $_?$_:''} 
                   $config->{'type'},
-                  $point->status,
+                  $point->mode,
                   $point->time,
                   $point->lat,
                   $point->lon,

@@ -15,20 +15,30 @@ $port||=q{2947};
 
 my $gps=Net::GPSD->new(host=>$host, port=>$port) || die("Error: Cannot connect to the gpsd server");
 
-print join("|", qw{status time lat lon alt speed heading}), "\n";
 while (1) {
   my $p=$gps->get();
   if ($p->fix) {
-    print join("|", map {defined $_?$_:''}
-                     $p->status,
+    print "--", join("|", map {defined $_?$_:''}
+                     $p->tag,
                      $p->time,
+                     $p->errortime,
                      $p->lat,
                      $p->lon,
                      $p->alt,
+                     $p->errorhorizontal,
+                     $p->errorvertical,
+                     $p->heading,
                      $p->speed,
-                     $p->heading),
+                     $p->climb,
+                     $p->errorheading,
+                     $p->errorspeed,
+                     $p->errorclimb,
+                     $p->mode),
                      "\n";
-    print join(":", map {defined $_?$_:''} @{$p->{'O'}}),"\n";
+    print "O=", join("|", map {defined $_?$_:''} @{$p->{'O'}}),"\n";
+    print "--", $p->mode, "\n";
+    print "M=", $p->{'M'}->[0], "\n"; 
+    print "\n";
   }
   sleep 1;
 }

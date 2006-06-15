@@ -1,5 +1,8 @@
 Revision history for Net::GPSD (aka GPS::gpsd before version 0.14)
 
+2006-06-14 v0.24
+  * Change dependancy on O[14](new) and M[0] vice S[0] to get fix.
+
 2006-06-11 v0.23
   * added logic to handle O=? watcher no fix
 

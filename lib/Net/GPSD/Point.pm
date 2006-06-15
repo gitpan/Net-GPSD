@@ -7,7 +7,7 @@ package Net::GPSD::Point;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.17} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.24} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift;
@@ -28,42 +28,42 @@ sub initialize {
 
 sub fix {
   my $self = shift();
-  return $self->status ? 1 : 0;
+  return defined($self->mode) ? ($self->mode > 1 ? 1 : 0) : 0;
 }
 
 sub status {
   my $self = shift();
-  if (@_) { $self->{'S'} ->[0] = shift() } #sets value
+  if (@_) { $self->{'S'}->[0] = shift() } #sets value
   return q2u $self->{'S'}->[0];
 }
 
 sub datetime {
   my $self = shift();
-  if (@_) { $self->{'D'} ->[0] = shift() } #sets value
+  if (@_) { $self->{'D'}->[0] = shift() } #sets value
   return q2u $self->{'D'}->[0];
 }
 
 sub tag {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[0] = shift() } #sets value
+  if (@_) { $self->{'O'}->[0] = shift() } #sets value
   return q2u $self->{'O'}->[0];
 }
 
 sub time {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[1] = shift() } #sets value
+  if (@_) { $self->{'O'}->[1] = shift() } #sets value
   return q2u $self->{'O'}->[1];
 }
 
 sub errortime {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[2] = shift() } #sets value
+  if (@_) { $self->{'O'}->[2] = shift() } #sets value
   return q2u $self->{'O'}->[2];
 }
 
 sub latitude {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[3] = shift() } #sets value
+  if (@_) { $self->{'O'}->[3] = shift() } #sets value
   return q2u $self->{'O'}->[3];
 }
 
@@ -74,7 +74,7 @@ sub lat {
 
 sub longitude {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[4] = shift() } #sets value
+  if (@_) { $self->{'O'}->[4] = shift() } #sets value
   return q2u $self->{'O'}->[4];
 }
 
@@ -91,7 +91,7 @@ sub latlon {
 
 sub altitude {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[5] = shift() } #sets value
+  if (@_) { $self->{'O'}->[5] = shift() } #sets value
   return q2u $self->{'O'}->[5];
 }
 
@@ -102,56 +102,56 @@ sub alt {
 
 sub errorhorizontal {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[6] = shift() } #sets value
+  if (@_) { $self->{'O'}->[6] = shift() } #sets value
   return q2u $self->{'O'}->[6];
 }
 
 sub errorvertical {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[7] = shift() } #sets value
+  if (@_) { $self->{'O'}->[7] = shift() } #sets value
   return q2u $self->{'O'}->[7];
 }
 
 sub heading {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[8] = shift() } #sets value
+  if (@_) { $self->{'O'}->[8] = shift() } #sets value
   return q2u $self->{'O'}->[8];
 }
 
 sub speed {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[9] = shift() } #sets value
+  if (@_) { $self->{'O'}->[9] = shift() } #sets value
   return q2u $self->{'O'}->[9];
 }
 
 sub climb {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[10] = shift() } #sets value
+  if (@_) { $self->{'O'}->[10] = shift() } #sets value
   return q2u $self->{'O'}->[10];
 }
 
 sub errorheading {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[11] = shift() } #sets value
+  if (@_) { $self->{'O'}->[11] = shift() } #sets value
   return q2u $self->{'O'}->[11];
 }
 
 sub errorspeed {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[12] = shift() } #sets value
+  if (@_) { $self->{'O'}->[12] = shift() } #sets value
   return q2u $self->{'O'}->[12];
 }
 
 sub errorclimb {
   my $self = shift();
-  if (@_) { $self->{'O'} ->[13] = shift() } #sets value
+  if (@_) { $self->{'O'}->[13] = shift() } #sets value
   return q2u $self->{'O'}->[13];
 }
 
 sub mode {
   my $self = shift();
-  if (@_) { $self->{'M'} ->[0] = shift() } #sets value
-  return q2u $self->{'M'}->[0];
+  if (@_) { $self->{'M'}->[0] = $self->{'O'}->[14] = shift() } #sets value
+  return q2u(defined($self->{'O'}->[14]) ? $self->{'O'}->[14] : $self->{'M'}->[0]);
 }
 
 sub q2u {
@@ -185,11 +185,11 @@ Net::GPSD::Point - Provides an object interface for a gps point.
 
 =item fix
 
-Returns true if status is fixed (logic based on the gpsd S command first data element)
+Returns true if mode is fixed (logic based on the gpsd M[0] or O[14])
 
 =item status
 
-Returns status. (maps to gpsd S command first data element)
+Returns DGPS status. (maps to gpsd S command first data element)
 
 =item datetime
 

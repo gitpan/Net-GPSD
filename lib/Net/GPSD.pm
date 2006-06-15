@@ -10,7 +10,7 @@ use IO::Socket;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.23} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.24} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift();
@@ -69,7 +69,7 @@ sub subscribe {
   while (defined($_=$sock->getline)) {
     if (m/,O=/) {
       $point=Net::GPSD::Point->new($self->parse($_));
-      $point->status(defined($point->tag) ? (defined($point->alt) ? 3 : 2) : 0);
+      $point->mode(defined($point->tag) ? (defined($point->alt) ? 3 : 2) : 0);
       if ($point->fix) {
         my $return=&{$handler}($last, $point, $config);
         $last=$return if (defined($return));
@@ -123,7 +123,7 @@ sub getsatellitelist {
 
 sub get {
   my $self=shift();
-  my $data=$self->retrieve('SDO');
+  my $data=$self->retrieve('SMDO');
   return Net::GPSD::Point->new($data);
 }
 
@@ -144,10 +144,8 @@ sub retrieve {
 
 sub open {
   my $self=shift();
-  my $host=$self->host();
-  my $port=$self->port();
-  my $sock = IO::Socket::INET->new(PeerAddr => $host,
-                                   PeerPort => $port);
+  my $sock = IO::Socket::INET->new(PeerAddr => $self->host,
+                                   PeerPort => $self->port);
   return $sock;
 }
 

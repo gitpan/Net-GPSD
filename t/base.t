@@ -60,9 +60,9 @@ ok($s1->used, 0);
 my $p1 = Net::GPSD::Point->new({
            O=>[qw{tag 1142128600 o2 38.865343 -77.110069 o5 o6 o7
                   53.649377382 21.37913373 o10 o11 o12 o13}],
-           S=>[1],
            D=>['2006-03-04T05:52:03.77Z'],
-           M=>[1],
+           M=>[3],
+           S=>[1]
          });
 my $p2 = Net::GPSD::Point->new({
            O=>[qw{. 1142128605 . 38.866119 -77.109338 . . . . . . . . .}],
@@ -90,7 +90,7 @@ ok($p1->climb, 'o10');
 ok($p1->errorheading, 'o11');
 ok($p1->errorspeed, 'o12');
 ok($p1->errorclimb, 'o13');
-ok($p1->mode, 1);
+ok($p1->mode, 3);
 
 ok($g->time($p1,$p2), 5);
 ok($g->distance($p1,$p2), 106.895668646645); #plainer calc - should be 107.0 spherical
