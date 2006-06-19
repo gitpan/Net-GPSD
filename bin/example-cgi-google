@@ -1,0 +1,30 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+example-cgi-google - Net::GPSD web based cgi example that forwards to google maps
+
+=cut
+
+use strict;
+use lib q{../lib};
+use Net::GPSD;
+use CGI;
+my $query=new CGI;
+
+my $host=$query->param('host') || q{localhost};
+my $port=$query->param('port') || q{2947};
+
+my $gps=Net::GPSD->new(host=>$host, port=>$port) || die("Error: Cannot connect to the gpsd server");
+
+my $point=$gps->get();
+if ($point->fix) {
+  print $query->redirect("http://maps.google.com/?q=".$point->lat.",".$point->lon);
+} else {
+  print $query->header(),
+        $query->start_html(-title=>"Net::GPSD CGI Example"),
+        $query->h1("Net::GPSD CGI Example"),
+        $query->p("No fix"),
+        $query->end_html,
+        "\n";
+}

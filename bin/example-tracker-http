@@ -20,9 +20,9 @@ $host||=q{localhost};
 $port||=q{2947};
 
 $opt->{'i'}||=int(2 ** 15 + rand(2 ** 15));  #integer
-$opt->{'s'}||=5;   #seconds  50
-$opt->{'d'}||=100; #meters   1000
-$opt->{'t'}||=20;  #meters   200
+$opt->{'s'}||=1200;   #seconds  50
+$opt->{'d'}||=2000; #meters   1000
+$opt->{'t'}||=500;  #meters   200
 
 print "Device:", $opt->{'i'}, " - $host:$port\n";
 

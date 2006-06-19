@@ -7,7 +7,7 @@ package Net::GPSD::Point;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.24} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.25} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift;
@@ -28,7 +28,11 @@ sub initialize {
 
 sub fix {
   my $self = shift();
-  return defined($self->mode) ? ($self->mode > 1 ? 1 : 0) : 0;
+  return defined($self->status)
+           ? ($self->status > 0 ? 1 : 0)
+           : (defined($self->mode)
+                ? ($self->mode > 1 ? 1 : 0)
+                : 0);
 }
 
 sub status {
@@ -156,7 +160,7 @@ sub mode {
 
 sub q2u {
   my $a=shift();
-  return $a eq '?' ? undef() : $a;
+  return defined($a) ? ($a eq '?' ? undef() : $a) : undef();
 }
 
 1;
