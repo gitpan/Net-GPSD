@@ -1,5 +1,8 @@
 Revision history for Net::GPSD (aka GPS::gpsd before version 0.14)
 
+2006-10-11 v0.26
+  * Error in Net::GPSD->track $||$*$ -> ($||$)*$;
+
 2006-06-19 v0.25
   * Change dependancy on S[0] first and then O[14]||M[0] to get fix.
   * Added examples
