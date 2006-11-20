@@ -1,5 +1,8 @@
 Revision history for Net::GPSD (aka GPS::gpsd before version 0.14)
 
+2006-10-28 v0.27
+  * changed track formula to use Geo:Forward.
+
 2006-10-11 v0.26
   * Error in Net::GPSD->track $||$*$ -> ($||$)*$;
 

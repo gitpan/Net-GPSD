@@ -10,7 +10,7 @@ use IO::Socket;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.26} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.27} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift();
@@ -202,31 +202,21 @@ sub distance {
 }
 
 sub track {
- #return calculated point of $p1 in time assuming constant velocity
+  #return calculated point of $p1 in time assuming constant velocity
   my $self=shift();
   my $p1=shift();
   my $time=shift();
-  my $distance_meters=($p1->speed||0) * $time;   #meters
-  my $earth_polar_circumference_meters_per_degree=6356752.314245 * &PI/180;
-  my $earth_equatorial_circumference_meters_per_degree=6378137 * &PI/180 * cos(deg2rad($p1->lat));
-  # Heading is measured clockwise from the North.  The angles for the math 
-  # sin and cos formulas are measured anti-clockwise from the East.  So, 
-  # in order to get this correct, we have to shift sin and cos the 90 
-  # degrees to cos and -sin.  The anti-clockwise/clockwise change flips 
-  # the sign on the sin back to positive.
-  my $distance_lat_meters=$distance_meters * cos(deg2rad($p1->heading||0)); 
-  my $distance_lon_meters=$distance_meters * sin(deg2rad($p1->heading||0));
-  #print  $distance_lat_meters, ":", $distance_lon_meters, "\n";
-  my $distance_lat_degrees=$distance_lat_meters
-                               / $earth_polar_circumference_meters_per_degree;
-  my $distance_lon_degrees=$distance_lon_meters
-                           / $earth_equatorial_circumference_meters_per_degree;
-  #print  $distance_lat_degrees, ":", $distance_lon_degrees, "\n";
+  use Geo::Forward;
+  my $object = Geo::Forward->new(); # default "WGS-84"
+  my $dist=($p1->speed||0) * $time;   #meters
+  my ($lat1,$lon1,$faz)=($p1->lat, $p1->lon, $p1->heading||0);
+  my ($lat2,$lon2,$baz) = $object->forward($lat1,$lon1,$faz,$dist);
+
   my $p2=Net::GPSD::Point->new($p1);
-  $p2->lat($p1->lat + $distance_lat_degrees);
-  $p2->lon($p1->lon + $distance_lon_degrees);
+  $p2->lat($lat2);
+  $p2->lon($lon2);
   $p2->time($p1->time + $time);
-  #$p2->heading($dird); #what is the new heading?
+  $p2->heading($baz-180);
   return $p2;
 }
 
@@ -287,7 +277,7 @@ __END__
 
 =head1 NAME
 
-Net::GPSD - Provides a perl interface to the gpsd daemon. 
+Net::GPSD - Provides an perl object client interface to the gpsd server daemon. 
 
 =head1 SYNOPSIS
 
