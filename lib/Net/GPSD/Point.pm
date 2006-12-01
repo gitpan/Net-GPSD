@@ -7,7 +7,7 @@ package Net::GPSD::Point;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.25} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.28} =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $this = shift;
@@ -205,7 +205,7 @@ Returns a tag identifying the last sentence received.  (maps to gpsd O command f
 
 =item time
 
-Returns Seconds since the Unix epoch, UTC. May have a fractional part of up to .01sec precision. (maps to gpsd O command second data element)
+Returns seconds since the Unix epoch, UTC. May have a fractional part. (maps to gpsd O command second data element)
 
 =item errortime
 

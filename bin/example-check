@@ -36,9 +36,6 @@ while (1) {
                      $p->mode),
                      "\n";
     print "O=", join("|", map {defined $_?$_:''} @{$p->{'O'}}),"\n";
-    print "--", $p->mode, "\n";
-    print "M=", $p->{'M'}->[0], "\n"; 
-    print "\n";
   }
   sleep 1;
 }

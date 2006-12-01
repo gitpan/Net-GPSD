@@ -1,13 +1,15 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Net-GPSD
-version:      0.27
+version:      0.28
 version_from: lib/Net/GPSD.pm
 installdirs:  site
 requires:
-    IO::Socket:                    0
+    constant:                      0
+    Geo::Forward:                  0
+    IO::Socket::INET:              0
     strict:                        0
     vars:                          0
 
 distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.25
+generated_by: ExtUtils::MakeMaker version 6.17

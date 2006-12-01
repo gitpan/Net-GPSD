@@ -4,13 +4,56 @@
 
 package Net::GPSD;
 
+=pod
+
+=head1 NAME
+
+Net::GPSD - Provides an Perl object client interface to the gpsd server daemon. 
+
+=head1 SYNOPSIS
+
+ use Net::GPSD;
+ $obj=new Net::GPSD;
+ my $point=$obj->get;
+ print $point->latlon. "\n";
+
+or
+
+ use Net::GPSD;
+ $obj=new Net::GPSD;
+ $obj->subscribe();
+
+=head1 DESCRIPTION
+
+Net::GPSD provides an Perl object client interface to the gpsd server daemon.  gpsd is an open source GPS deamon from http://gpsd.berlios.de/.
+ 
+For example the get method returns a blessed hash reference like
+
+ {S=>[?|0|1|2],
+  P=>[lat,lon]}
+
+Fortunately, there are various methods that hide this hash from the user.
+
+=cut
+
 use strict;
 use vars qw($VERSION);
-use IO::Socket;
+use constant PI => 2 * atan2(1, 0);
+use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.27} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.28} =~ /(\d+)\.(\d+)/);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Returns a new Net::GPSD object.
+
+ my $obj=Net::GPSD->new(host=>"localhost", port=>"2947");
+
+=cut
 
 sub new {
   my $this = shift();
@@ -21,11 +64,15 @@ sub new {
   return $self;
 }
 
+=head1 METHODS
+
+=cut
+
 sub initialize {
   my $self = shift();
   my %param = @_;
-  $self->host($param{'host'} || 'localhost');
-  $self->port($param{'port'} || '2947');
+  $self->{'host'}=$param{'host'} || 'localhost';
+  $self->{'port'}=$param{'port'} || '2947';
   unless ($param{'do_not_init'}) { #for testing
     my $data=$self->retrieve('LKIFCB');
     foreach (keys %$data) {
@@ -34,25 +81,28 @@ sub initialize {
   }
 }
 
-sub subscribeget {
-  my $self = shift();
-  my %param = @_;
-  my $last=undef();
-  my $handler=$param{'handler'} || \&default_point_handler;
-  my $config=$param{'config'} || {};
-  while (1) {
-    my $point=$self->get();
-    if (defined($point) and $point->fix) { #if gps fix
-      my $return=&{$handler}($last, $point, $config);
-      if (defined($return)) {
-        $last=$return;
-      } else {
-        #  An undefined return does not reset the the $last point variable
-      }
-    }
-    sleep 1; 
-  }
+=head2 get
+
+Returns a current point object regardless if there is a fix or not.  Application should test if $point->fix is true.
+
+ my $point->get();
+
+=cut
+
+sub get {
+  my $self=shift();
+  my $data=$self->retrieve('SMDO');
+  return Net::GPSD::Point->new($data);
 }
+
+=head2 subscribe
+
+The subscribe method listens to gpsd server in watcher (W command)  mode and calls the handler for each point received.  The return for the handler will be sent back as the first argument to the handler on the next call.
+
+ $obj->subscribe();
+ $obj->subscribe(handler=>\&gpsd_handler, config=>$config);
+
+=cut
 
 sub subscribe {
   my $self = shift();
@@ -107,6 +157,15 @@ sub default_satellitelist_handler {
   return 1;
 }
 
+=head2 getsatellitelist
+
+Returns a list of Net::GPSD::Satellite objects.  (maps to gpsd Y command)
+
+ my @list=$obj->getsatellitelist;
+ my $list=$obj->getsatellitelist;
+
+=cut
+
 sub getsatellitelist {
   my $self=shift();
   my $string='Y';
@@ -118,13 +177,7 @@ sub getsatellitelist {
     #print "$_\n";
     push @list, Net::GPSD::Satellite->new(split " ", $_);
   }
-  return @list;
-}
-
-sub get {
-  my $self=shift();
-  my $data=$self->retrieve('SMDO');
-  return Net::GPSD::Point->new($data);
+  return wantarray ? @list : \@list;
 }
 
 sub retrieve {
@@ -166,17 +219,139 @@ sub parse {
   return \%data;
 }
 
-sub port {
-  my $self = shift();
-  if (@_) { $self->{'port'} = shift() } #sets value
-  return $self->{'port'};
-}
+=head2 host
+
+Returns the current gpsd host.
+
+ my $host=$obj->host;
+
+=cut
 
 sub host {
   my $self = shift();
-  if (@_) { $self->{'host'} = shift() } #sets value
   return $self->{'host'};
 }
+
+=head2 port
+
+Returns the current gpsd TCP port.
+
+ my $port=$obj->port;
+
+=cut
+
+sub port {
+  my $self = shift();
+  return $self->{'port'};
+}
+
+=head2 baud
+
+Returns the baud rate of the connect GPS receiver. (maps to gpsd B command first data element)
+
+ my $baud=$obj->baud;
+
+=cut
+
+sub baud {
+  my $self = shift();
+  return q2u $self->{'B'}->[0];
+}
+
+=head2 rate
+
+Returns the sampling rate of the GPS receiver. (maps to gpsd C command first data element)
+
+ my $rate=$obj->rate;
+
+=cut
+
+sub rate {
+  my $self = shift();
+  return q2u $self->{'C'}->[0];
+}
+
+=head2 device
+
+Returns the GPS device name. (maps to gpsd F command first data element)
+
+ my $device=$obj->device;
+
+=cut
+
+sub device {
+  my $self = shift();
+  return q2u $self->{'F'}->[0];
+}
+
+=head2 identification (aka id)
+
+Returns a text string identifying the GPS. (maps to gpsd I command first data element)
+
+ my $identification=$obj->identification;
+ my $identification=$obj->id;
+
+=cut
+
+sub identification {
+  my $self = shift();
+  return q2u $self->{'I'}->[0];
+}
+
+sub id {
+  my $self = shift();
+  return $self->identification;
+}
+
+=head2 protocol
+
+Returns the GPSD protocol revision number. (maps to gpsd L command first data element)
+
+ my $protocol=$obj->protocol;
+
+=cut
+
+sub protocol {
+  my $self = shift();
+  return q2u $self->{'L'}->[0];
+}
+
+=head2 daemon
+
+Returns the gpsd daemon version. (maps to gpsd L command second data element)
+
+ my $daemon=$obj->daemon;
+
+=cut
+
+sub daemon {
+  my $self = shift();
+  return q2u $self->{'L'}->[1];
+}
+
+=head2 commands
+
+Returns a string of accepted command letters. (maps to gpsd L command third data element)
+
+ my $commands=$obj->commands;
+
+=cut
+
+sub commands {
+  my $self = shift();
+  my $string=q2u $self->{'L'}->[2];
+  return wantarray ? split(//, $string) : $string
+}
+
+=head1 FUNCTIONS
+
+=head2 time
+
+Returns the time difference between two point objects in seconds.
+
+ my $seconds=$obj->time($p1, $p2);
+
+=cut
 
 sub time {
   #seconds between p1 and p2
@@ -186,13 +361,21 @@ sub time {
   return abs($p2->time - $p1->time);
 }
 
+=head2 distance
+
+Returns the distance difference between two point objects in meters. (simple calculation)
+
+ my $meters=$obj->distance($p1, $p2);
+
+=cut
+
 sub distance {
   #returns meters between p1 and p2
   my $self=shift();
   my $p1=shift();
   my $p2=shift();
-  my $earth_polar_circumference_meters_per_degree=6356752.314245 * &PI/180;
-  my $earth_equatorial_circumference_meters_per_degree=6378137 * &PI/180;
+  my $earth_polar_circumference_meters_per_degree=6356752.314245 * PI/180;
+  my $earth_equatorial_circumference_meters_per_degree=6378137 * PI/180;
   my $delta_lat_degrees=$p2->lat - $p1->lat;
   my $delta_lon_degrees=$p2->lon - $p1->lon;
   my $delta_lat_meters=$delta_lat_degrees * $earth_polar_circumference_meters_per_degree;
@@ -201,13 +384,21 @@ sub distance {
   return sqrt($delta_lat_meters**2 + $delta_lon_meters**2);
 }
 
+=head2 track
+
+Returns a point object at the predicted location in time seconds assuming constant velocity. (Geo::Forward calculation)
+
+ my $point=$obj->track($p1, $seconds);
+
+=cut
+
 sub track {
   #return calculated point of $p1 in time assuming constant velocity
   my $self=shift();
   my $p1=shift();
   my $time=shift();
   use Geo::Forward;
-  my $object = Geo::Forward->new(); # default "WGS-84"
+  my $object = Geo::Forward->new(); # default "WGS84"
   my $dist=($p1->speed||0) * $time;   #meters
   my ($lat1,$lon1,$faz)=($p1->lat, $p1->lon, $p1->heading||0);
   my ($lat2,$lon2,$baz) = $object->forward($lat1,$lon1,$faz,$dist);
@@ -220,162 +411,23 @@ sub track {
   return $p2;
 }
 
-sub PI {4 * atan2 1, 1;}
-
-sub deg2rad {shift() * &PI/180}
-
-sub baud {
-  my $self = shift();
-  return q2u $self->{'B'}->[0];
-}
-
-sub rate {
-  my $self = shift();
-  return q2u $self->{'C'}->[0];
-}
-
-sub device {
-  my $self = shift();
-  return q2u $self->{'F'}->[0];
-}
-
-sub identification {
-  my $self = shift();
-  return q2u $self->{'I'}->[0];
-}
-
-sub id {
-  my $self = shift();
-  return $self->identification;
-}
-
-sub protocol {
-  my $self = shift();
-  return q2u $self->{'L'}->[0];
-}
-
-sub daemon {
-  my $self = shift();
-  return q2u $self->{'L'}->[1];
-}
-
-sub commands {
-  my $self = shift();
-  my $string=q2u $self->{'L'}->[2];
-  return wantarray ? split(//, $string) : $string
-}
-
 sub q2u {
   my $a=shift();
   return $a eq '?' ? undef() : $a;
 }
 
+sub deg2rad {shift() * PI/180}
+
 1;
 __END__
 
-=pod
-
-=head1 NAME
-
-Net::GPSD - Provides an perl object client interface to the gpsd server daemon. 
-
-=head1 SYNOPSIS
-
- use Net::GPSD;
- $gps=new Net::GPSD;
- my $point=$gps->get;
- print $point->latlon. "\n";
-
-or
-
- use Net::GPSD;
- $gps=new Net::GPSD;
- $gps->subscribe;
-
-=head1 DESCRIPTION
-
-Net::GPSD provides a perl interface to gpsd daemon.  gpsd is an open source gps deamon from http://gpsd.berlios.de/.
- 
-For example the method get() returns a hash reference like
-
- {S=>[?|0|1|2],
-  P=>[lat,lon]}
-
-Fortunately, there are various methods that hide this hash from the user.
-
-=head1 METHODS
-
-=over
-
-=item new
-
-Returns a new gps object.
-
-=item subscribe(handler=>\&sub, config=>{})
-
-Subscribes subroutine to call when a valid fix is obtained.  When the GPS receiver has a good fix this subroutine will be called every second.  The return (in v0.5 must be a ref) from this sub will be sent back as the first argument to the subroutine on the next call.
-
-=item get
-
-Returns a current point object regardless if there is a fix or not.  Application should test if $point->fix is true.
-
-=item getsatellitelist
-
-Returns a list of Net::GPSD::Satellite objects.  (maps to gpsd Y command)
-
-=item port
-
-Get or set the current gpsd TCP port.
-
-=item host
-
-Get or set the current gpsd host.
-
-=item time(p1, p2)
-
-Returns the time difference between two points in seconds.
-
-=item distance(p1, p2)
-
-Returns the distance difference between two points in meters. (plainer calculation)
-
-=item track(p1, time)
-
-Returns a point object at the predicted location of p1 in time seconds. (plainer calculation based on speed and heading)
-
-=item baud
-
-Returns the baud rate of the connect GPS receiver. (maps to gpsd B command first data element)
-
-=item rate
-
-Returns the sampling rate of the GPS receiver. (maps to gpsd C command first data element)
-
-=item device
-
-Returns the GPS device name. (maps to gpsd F command first data element)
-
-=item identification (aka id)
-
-Returns a text string identifying the GPS. (maps to gpsd I command first data element)
-
-=item protocol
-
-Returns the GPSD protocol revision number. (maps to gpsd L command first data element)
-
-=item daemon
-
-Returns the gpsd daemon version. (maps to gpsd L command second data element)
-
-=item commands
-
-Returns a string of accepted request letters. (maps to gpsd L command third data element)
-
-=back
-
 =head1 GETTING STARTED
 
+Try the examples in the bin folder.  Most every method has a default which is most likely what you will want.
+
 =head1 KNOWN LIMITATIONS
+
+The distance function is home grown; don't trust it. When I get a chance, I'll migrate it to something else. Maybe Geo:Ellisoid
 
 =head1 BUGS
 
@@ -383,49 +435,21 @@ No known bugs.
 
 =head1 EXAMPLES
 
- use Net::GPSD;
- $gps=new Net::GPSD;
- my $point=$gps->get;
- if ($point->fix) {
-   print $point->latlon. "\n";
- } else {
-   print "No fix.\n";
- }
-
-or
-
- use Net::GPSD;
- $gps=new Net::GPSD;
- $gps->subscribe(handler=>\&point_handler,
-                 config=>{key=>"value"});
- sub point_handler {
-   my $last_return=shift(); #the return from the last call or undef if first
-   my $point=shift(); #current point $point->fix is true!
-   my $config=shift();
-   print $last_return, " ", $point->latlon. "\n";
-   return $last_return + 1; #Return a true scalar type e.g. $a, {}, []
-                            #try the interesting return of $point
- }
-
-=over
-
-=item Example Programs
-
 =begin html
 
 <ul>
-<li><a href="../../bin/example-information">example-information</a></li>
 <li><a href="../../bin/example-get">example-get</a></li>
 <li><a href="../../bin/example-subscribe">example-subscribe</a></li>
+<li><a href="../../bin/example-subscribe-handler">example-subscribe-handler</a></li>
+<li><a href="../../bin/example-check">example-check</a></li>
+<li><a href="../../bin/example-information">example-information</a></li>
 <li><a href="../../bin/example-getsatellitelist">example-getsatellitelist</a></li>
 <li><a href="../../bin/example-tracker">example-tracker</a></li>
 <li><a href="../../bin/example-tracker-http">example-tracker-http</a></li>
-<li><a href="../../bin/example-check">example-check</a></li>
+<li><a href="../../bin/example-tracker-text">example-tracker-text</a></li>
 </ul>
 
 =end html
-
-=back
 
 =head1 AUTHOR
 
@@ -433,8 +457,12 @@ Michael R. Davis, qw/gpsd michaelrdavis com/
 
 =head1 SEE ALSO
 
-gpsd http tracker http://twiki.davisnetworks.com/bin/view/Main/GpsApplications
+http://gpsd.davisnetworks.com/
 
-gpsd home http://gpsd.berlios.de/
+http://gpsd.berlios.de/
+
+Geo::Forward
+Net::GPSD::Point
+Net::GPSD::Satellite
 
 =cut

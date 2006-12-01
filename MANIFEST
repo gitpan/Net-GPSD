@@ -12,6 +12,7 @@ bin/example-subscribe
 bin/example-tracker
 bin/example-tracker-http
 bin/example-tracker-text
+bin/example-subscribe-handler
 lib/Net/GPSD.pm
 lib/Net/GPSD/Point.pm
 lib/Net/GPSD/Report/http.pm

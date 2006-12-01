@@ -3,9 +3,11 @@ WriteMakefile(
   NAME      => q{Net::GPSD},
   VERSION_FROM => q{lib/Net/GPSD.pm},
   PREREQ_PM => {
-                 strict       => 0,
-                 vars         => 0,
-                 IO::Socket   => 0,
+                 strict             => 0,
+                 vars               => 0,
+                 constant           => 0,
+                 Geo::Forward       => 0,
+                 IO::Socket::INET   => 0,
                },
                ($] >= 5.005 ? 
                  (
