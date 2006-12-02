@@ -9,12 +9,13 @@
 use strict;
 use lib q{lib};
 use lib q{../lib};
+use constant NEAR_DEFAULT => 7;
 
 sub near {
   my $x=shift();
   my $y=shift();
-  my $p=shift()||5;
-  if ($x-$y < 10**-$p) {
+  my $p=shift()||NEAR_DEFAULT;
+  if (($x-$y)/$y < 10**-$p) {
     return 1;
   } else {
     return 0;
@@ -93,11 +94,10 @@ ok($p1->errorclimb, 'o13');
 ok($p1->mode, 3);
 
 ok($g->time($p1,$p2), 5);
-ok($g->distance($p1,$p2), 106.895668646645); #plainer calc - should be 107.0 spherical
+ok near($g->distance($p1,$p2), 106.9869, 5); #from fortran
 my $p3=$g->track($p1, 5);
-ok(near $p3->lat, 38.8659140849351);
-ok(near $p3->lon, -77.1090757100891);
+ok near($p3->lat, 38.8659140849351);
+ok near($p3->lon, -77.1090757100891);
 ok($p3->time, 1142128605);
-ok($g->distance($p1,$p1), 0);
-#ok(near $g->distance($p2,$p3), 0, 3);
+ok($g->distance($p1,$p1) < 1e-7); #should be very close to zero
 ok($g->time($p2,$p3), 0);

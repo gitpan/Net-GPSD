@@ -43,7 +43,7 @@ use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.28} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.29} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -374,14 +374,15 @@ sub distance {
   my $self=shift();
   my $p1=shift();
   my $p2=shift();
-  my $earth_polar_circumference_meters_per_degree=6356752.314245 * PI/180;
-  my $earth_equatorial_circumference_meters_per_degree=6378137 * PI/180;
-  my $delta_lat_degrees=$p2->lat - $p1->lat;
-  my $delta_lon_degrees=$p2->lon - $p1->lon;
-  my $delta_lat_meters=$delta_lat_degrees * $earth_polar_circumference_meters_per_degree;
-  my $delta_lon_meters=$delta_lon_degrees * $earth_equatorial_circumference_meters_per_degree * cos(deg2rad($p1->lat + $delta_lat_degrees / 2));
-  #print $delta_lat_meters, ":",  $delta_lon_meters, "\n";
-  return sqrt($delta_lat_meters**2 + $delta_lon_meters**2);
+  my $lat1=$p1->lat;
+  my $lon1=$p1->lon;
+  my $lon2=$p2->lon;
+  my $lat2=$p2->lat;
+
+  use Geo::Inverse;
+  my $obj = Geo::Inverse->new();
+  my ($faz, $baz, $dist)=$obj->inverse($lat1, $lon1, $lat2, $lon2);
+  return $dist;
 }
 
 =head2 track

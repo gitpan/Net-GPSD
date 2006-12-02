@@ -1,12 +1,13 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Net-GPSD
-version:      0.28
+version:      0.29
 version_from: lib/Net/GPSD.pm
 installdirs:  site
 requires:
     constant:                      0
     Geo::Forward:                  0
+    Geo::Inverse:                  0
     IO::Socket::INET:              0
     strict:                        0
     vars:                          0

@@ -7,6 +7,7 @@ WriteMakefile(
                  vars               => 0,
                  constant           => 0,
                  Geo::Forward       => 0,
+                 Geo::Inverse       => 0,
                  IO::Socket::INET   => 0,
                },
                ($] >= 5.005 ? 
