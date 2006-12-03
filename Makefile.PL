@@ -5,10 +5,10 @@ WriteMakefile(
   PREREQ_PM => {
                  strict             => 0,
                  vars               => 0,
-                 constant           => 0,
                  Geo::Forward       => 0,
                  Geo::Inverse       => 0,
                  IO::Socket::INET   => 0,
+                 LWP::UserAgent     => 0,
                },
                ($] >= 5.005 ? 
                  (

@@ -1,13 +1,58 @@
-#Copyright (c) 2006 Michael R. Davis (mrdvt92)
-#All rights reserved. This program is free software;
-#you can redistribute it and/or modify it under the same terms as Perl itself.
-
 package Net::GPSD::Satellite;
+
+=pod
+
+=head1 NAME
+
+Net::GPSD::Satellite - Provides an interface for a gps satellite object.
+
+=head1 SYNOPSIS
+
+  use Net::GPSD;
+  my $obj=Net::GPSD->new();
+  my $i=0;
+  print join("\t", qw{Count PRN ELEV Azim SNR USED}), "\n";
+  foreach ($obj->getsatellitelist) {
+    print join "\t", ++$i,
+                     $_->prn,
+                     $_->elev,
+                     $_->azim,
+                     $_->snr,
+                     $_->used;
+    print "\n";
+  }
+
+or to construct a satelite object
+
+  use Net::GPSD::Satelite;
+  my $obj=Net::GPSD::Satellite->new(22,80,79,35,1);
+
+or to create a satelite object
+
+  use Net::GPSD::Satelite;
+  my $obj=Net::GPSD::Satellite->new();
+  $obj->prn(22), 
+  $obj->elev(80), 
+  $obj->azim(79), 
+  $obj->snr(35), 
+  $obj->used(1);
+
+=head1 DESCRIPTION
+
+=cut
 
 use strict;
 use vars qw($VERSION);
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.14} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.30} =~ /(\d+)\.(\d+)/);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+  my $obj=Net::GPSD::Satellite->new($prn,$elev,$azim,$snr,$used);
+
+=cut
 
 sub new {
   my $this = shift;
@@ -18,6 +63,10 @@ sub new {
   return $self;
 }
 
+=head1 METHODS
+
+=cut
+
 sub initialize {
   my $self = shift();
   $self->{'prn'} = shift();
@@ -27,11 +76,29 @@ sub initialize {
   $self->{'used'} = shift();
 }
 
+=head2 prn
+
+Returns the Satellite PRN number.
+
+  $obj->prn(22); 
+  my $prn=$obj->prn; 
+
+=cut
+
 sub prn {
   my $self = shift();
   if (@_) { $self->{'prn'} = shift() } #sets value
   return $self->{'prn'};
 }
+
+=head2 elevation (aka elev)
+
+Returns the satellite elevation, 0 to 90 degrees.
+
+  $obj->elev(80); 
+  my $elev=$obj->elev; 
+
+=cut
 
 sub elevation {
   my $self = shift();
@@ -44,6 +111,15 @@ sub elev {
   return $self->elevation(@_);
 }
 
+=head2 azimuth (aka azim)
+
+Returns the satellite azimuth, 0 to 359 degrees.
+
+  $obj->azim(79); 
+  my $azim=$obj->azim; 
+
+=cut
+
 sub azimuth {
   my $self = shift();
   if (@_) { $self->{'azimuth'} = shift() } #sets value
@@ -55,11 +131,29 @@ sub azim {
   return $self->azimuth(@_);
 }
 
+=head2 snr
+
+Returns the Signal to Noise ratio (C/No) 00 to 99 dB, null when not tracking.
+
+  $obj->snr(35); 
+  my $snr=$obj->snr; 
+
+=cut
+
 sub snr {
   my $self = shift();
   if (@_) { $self->{'snr'} = shift() } #sets value
   return $self->{'snr'};
 }
+
+=head2 used
+
+Returns a 1 or 0 according to if the satellite was or was not used in the last fix.
+
+  $obj->used(1);
+  my $used=$obj->used; 
+
+=cut
 
 sub used {
   my $self = shift();
@@ -75,60 +169,6 @@ sub q2u {
 1;
 __END__
 
-=pod
-
-=head1 NAME
-
-Net::GPSD::Satellite - Provides an interface for a gps satellite object.
-
-=head1 SYNOPSIS
-
- #!/usr/bin/perl
- use strict;
- use Net::GPSD;
- my $host = shift() || 'localhost';
- my $gps=Net::GPSD->new(host=>$host) || die("Error: Cannot connect to the gpsd server");
-
- my $i=0;
- print join("\t", qw{Count PRN ELEV Azim SNR USED}), "\n";
- foreach ($gps->getsatellitelist) {
-   print join "\t", ++$i,
-                    $_->prn,
-                    $_->elev,
-                    $_->azim,
-                    $_->snr,
-                    $_->used;
-   print "\n";
- }
-
-=head1 DESCRIPTION
-
-=head1 METHODS
-
-=over
-
-=item prn
-
-Returns the Satellite PRN number.
-
-=item elevation (aka elev)
-
-Returns the satellite elevation, 0 to 90 degrees.
-
-=item azimuth (aka azim)
-
-Returns the satellite azimuth, 0 to 359 degrees.
-
-=item snr
-
-Returns the Signal to Noise ratio (C/No) 00 to 99 dB, null when not tracking.
-
-=item used
-
-Returns a 1 or 0 according to if the satellite was or was not used in the last fix.
-
-=back
-
 =head1 GETTING STARTED
 
 =head1 KNOWN LIMITATIONS
@@ -143,10 +183,12 @@ No known bugs.
 
 Michael R. Davis, qw/gpsd michaelrdavis com/
 
+=head1 LICENSE
+
+Copyright (c) 2006 Michael R. Davis (mrdvt92)
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
 =head1 SEE ALSO
-
-Net::GPSD
-
-Net::GPSD::Point
 
 =cut

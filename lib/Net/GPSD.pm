@@ -1,7 +1,3 @@
-#Copyright (c) 2006 Michael R. Davis (mrdvt92)
-#All rights reserved. This program is free software;
-#you can redistribute it and/or modify it under the same terms as Perl itself.
-
 package Net::GPSD;
 
 =pod
@@ -13,14 +9,14 @@ Net::GPSD - Provides an Perl object client interface to the gpsd server daemon.
 =head1 SYNOPSIS
 
  use Net::GPSD;
- $obj=new Net::GPSD;
+ $obj=Net::GPSD->new;
  my $point=$obj->get;
  print $point->latlon. "\n";
 
 or
 
  use Net::GPSD;
- $obj=new Net::GPSD;
+ $obj=Net::GPSD->new;
  $obj->subscribe();
 
 =head1 DESCRIPTION
@@ -38,12 +34,11 @@ Fortunately, there are various methods that hide this hash from the user.
 
 use strict;
 use vars qw($VERSION);
-use constant PI => 2 * atan2(1, 0);
 use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.29} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.30} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -83,9 +78,9 @@ sub initialize {
 
 =head2 get
 
-Returns a current point object regardless if there is a fix or not.  Application should test if $point->fix is true.
+Returns a current point object regardless if there is a fix or not.  Applications should test if $point->fix is true.
 
- my $point->get();
+ my $point=$obj->get();
 
 =cut
 
@@ -417,8 +412,6 @@ sub q2u {
   return $a eq '?' ? undef() : $a;
 }
 
-sub deg2rad {shift() * PI/180}
-
 1;
 __END__
 
@@ -428,7 +421,11 @@ Try the examples in the bin folder.  Most every method has a default which is mo
 
 =head1 KNOWN LIMITATIONS
 
-The distance function is home grown; don't trust it. When I get a chance, I'll migrate it to something else. Maybe Geo:Ellisoid
+The distance function is Geo::Inverse.
+
+The track function is Geo::Forward.
+
+All units are degrees, meters, seconds.
 
 =head1 BUGS
 
@@ -456,14 +453,15 @@ No known bugs.
 
 Michael R. Davis, qw/gpsd michaelrdavis com/
 
+=head1 LICENSE
+
+Copyright (c) 2006 Michael R. Davis (mrdvt92)
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
 =head1 SEE ALSO
 
-http://gpsd.davisnetworks.com/
-
-http://gpsd.berlios.de/
-
+Geo::Inverse
 Geo::Forward
-Net::GPSD::Point
-Net::GPSD::Satellite
 
 =cut
