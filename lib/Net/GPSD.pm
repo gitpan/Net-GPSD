@@ -38,7 +38,7 @@ use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.30} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.31} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 

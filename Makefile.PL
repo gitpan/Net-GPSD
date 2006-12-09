@@ -5,8 +5,8 @@ WriteMakefile(
   PREREQ_PM => {
                  strict             => 0,
                  vars               => 0,
-                 Geo::Forward       => 0,
-                 Geo::Inverse       => 0,
+                 Geo::Forward       => 0.09,
+                 Geo::Inverse       => 0.02,
                  IO::Socket::INET   => 0,
                  LWP::UserAgent     => 0,
                },
