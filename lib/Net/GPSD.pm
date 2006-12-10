@@ -4,7 +4,7 @@ package Net::GPSD;
 
 =head1 NAME
 
-Net::GPSD - Provides an Perl object client interface to the gpsd server daemon. 
+Net::GPSD - Provides an object client interface to the gpsd server daemon. 
 
 =head1 SYNOPSIS
 
@@ -21,7 +21,7 @@ or
 
 =head1 DESCRIPTION
 
-Net::GPSD provides an Perl object client interface to the gpsd server daemon.  gpsd is an open source GPS deamon from http://gpsd.berlios.de/.
+Net::GPSD provides an object client interface to the gpsd server daemon.  gpsd is an open source GPS deamon from http://gpsd.berlios.de/.
  
 For example the get method returns a blessed hash reference like
 
@@ -38,7 +38,7 @@ use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.31} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.32} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
