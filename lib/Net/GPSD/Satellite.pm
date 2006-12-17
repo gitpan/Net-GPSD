@@ -19,6 +19,7 @@ Net::GPSD::Satellite - Provides an interface for a gps satellite object.
                      $_->azim,
                      $_->snr,
                      $_->used;
+                     $_->oid;
     print "\n";
   }
 
@@ -43,8 +44,9 @@ or to create a satelite object
 
 use strict;
 use vars qw($VERSION);
+use GPS::PRN;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.30} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.33} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -69,11 +71,14 @@ sub new {
 
 sub initialize {
   my $self = shift();
-  $self->{'prn'} = shift();
-  $self->{'elevation'} = shift();
-  $self->{'azimuth'} = shift();
-  $self->{'snr'} = shift();
-  $self->{'used'} = shift();
+  $self->{'gpsprn'}=GPS::PRN->new();
+  if (scalar(@_)) {
+    $self->prn(shift());
+    $self->elevation(shift());
+    $self->azimuth(shift());
+    $self->snr(shift());
+    $self->used(shift());
+  }
 }
 
 =head2 prn
@@ -86,9 +91,32 @@ Returns the Satellite PRN number.
 =cut
 
 sub prn {
-  my $self = shift();
-  if (@_) { $self->{'prn'} = shift() } #sets value
+  my $self=shift();
+  if (@_) {
+    $self->{'prn'}=shift();
+    if (int($self->{'prn'})) {
+      $self->{'oid'}=$self->{'gpsprn'}->oid_prn($self->{'prn'});
+    }
+  } #sets value
   return $self->{'prn'};
+}
+
+=head2 oid
+
+Returns the Satellite Object ID from the GPS::PRN package.
+
+  $obj->oid(22216); 
+  my $oid=$obj->oid; 
+
+=cut
+
+sub oid {
+  my $self=shift();
+  if (@_) {
+    $self->{'oid'}=shift();
+    $self->{'prn'}=$self->{'gpsprn'}->prn_oid($self->{'oid'});
+  } #sets value
+  return $self->{'oid'};
 }
 
 =head2 elevation (aka elev)

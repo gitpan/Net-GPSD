@@ -9,6 +9,7 @@ WriteMakefile(
                  Geo::Inverse       => 0.02,
                  IO::Socket::INET   => 0,
                  LWP::UserAgent     => 0,
+                 GPS::PRN           => 0,
                },
                ($] >= 5.005 ? 
                  (

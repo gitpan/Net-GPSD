@@ -38,7 +38,7 @@ BEGIN {
     }
 }
 
-BEGIN { plan tests => 45 }
+BEGIN { plan tests => 50 }
 
 # just check that all modules can be compiled
 ok(eval {require Net::GPSD; 1}, 1, $@);
@@ -57,12 +57,25 @@ ok(ref $p, "Net::GPSD::Point");
 my $s = Net::GPSD::Satellite->new();
 ok(ref $s, "Net::GPSD::Satellite");
 
-my $s1 = Net::GPSD::Satellite->new(qw{23 37 312 34 0});
+my $gpsprn=GPS::PRN->new();
+my $oid21=$gpsprn->oid_prn(21); #oid not static cannot hard code
+my $oid23=$gpsprn->oid_prn(23); #oid not static cannot hard code
+
+my $s1=Net::GPSD::Satellite->new(qw{23 37 312 34 0});
 ok($s1->prn, 23);
 ok($s1->elevation, 37);
 ok($s1->azimuth, 312);
 ok($s1->snr, 34);
 ok($s1->used, 0);
+ok($s1->oid, $oid23);
+
+$s1=Net::GPSD::Satellite->new();
+$s1->prn(23);
+ok($s1->prn, 23);
+ok($s1->oid, $oid23);
+$s1->oid($oid21);
+ok($s1->prn, 21);
+ok($s1->oid, $oid21);
 
 my $p1 = Net::GPSD::Point->new({
            O=>[qw{tag 1142128600 o2 38.865343 -77.110069 o5 o6 o7
