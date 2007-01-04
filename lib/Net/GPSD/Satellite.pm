@@ -94,7 +94,7 @@ sub prn {
   my $self=shift();
   if (@_) {
     $self->{'prn'}=shift();
-    if (int($self->{'prn'})) {
+    if (int($self->{'prn'})) { #PRN != 0 ?
       $self->{'oid'}=$self->{'gpsprn'}->oid_prn($self->{'prn'});
     }
   } #sets value

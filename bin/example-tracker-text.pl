@@ -7,9 +7,9 @@ example-tracker-text - Net::GPSD example
 =cut
 
 use strict;
-use lib q{../lib};
-use Net::GPSD;
+use lib qw{./lib ../lib};
 use Getopt::Std;
+use Net::GPSD;
 
 my $opt={};
 getopts('s:d:t:D:z:P:', $opt);

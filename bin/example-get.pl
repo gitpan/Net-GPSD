@@ -7,8 +7,9 @@ example-get - Net::GPSD get method example
 =cut
 
 use strict;
-use lib q{../lib};
+use lib qw{./lib ../lib};
 use Net::GPSD;
+
 my ($host,$port)=split(q{:}, shift()||'');
 $host||=q{localhost};
 $port||=q{2947};

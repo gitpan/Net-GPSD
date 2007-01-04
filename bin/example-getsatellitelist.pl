@@ -8,8 +8,9 @@ example-getsatellitelist - Net::GPSD getsatellitelist method example
 
 
 use strict;
-use lib q{../lib};
+use lib qw{./lib ../lib};
 use Net::GPSD;
+
 my ($host,$port)=split(q{:}, shift()||'');
 $host||=q{localhost};
 $port||=q{2947};

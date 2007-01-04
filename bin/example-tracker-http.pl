@@ -7,9 +7,9 @@ example-tracker-http - Net::GPSD::Report::http example
 =cut
 
 use strict;
-use lib q{../lib};
-use Net::GPSD;
+use lib qw{./lib ../lib};
 use Getopt::Std;
+use Net::GPSD;
 use Net::GPSD::Report::http;
 
 my $opt={};
