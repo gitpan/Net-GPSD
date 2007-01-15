@@ -22,7 +22,7 @@ or
 =head1 DESCRIPTION
 
 Net::GPSD provides an object client interface to the gpsd server daemon.  gpsd is an open source GPS deamon from http://gpsd.berlios.de/.
- 
+
 For example the get method returns a blessed hash reference like
 
  {S=>[?|0|1|2],
@@ -38,7 +38,7 @@ use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.34} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.35} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -436,15 +436,15 @@ No known bugs.
 =begin html
 
 <ul>
-<li><a href="../../bin/example-get">example-get</a></li>
-<li><a href="../../bin/example-subscribe">example-subscribe</a></li>
-<li><a href="../../bin/example-subscribe-handler">example-subscribe-handler</a></li>
-<li><a href="../../bin/example-check">example-check</a></li>
-<li><a href="../../bin/example-information">example-information</a></li>
-<li><a href="../../bin/example-getsatellitelist">example-getsatellitelist</a></li>
-<li><a href="../../bin/example-tracker">example-tracker</a></li>
-<li><a href="../../bin/example-tracker-http">example-tracker-http</a></li>
-<li><a href="../../bin/example-tracker-text">example-tracker-text</a></li>
+<li><a href="../../bin/example-get.pl">example-get.pl</a></li>
+<li><a href="../../bin/example-subscribe.pl">example-subscribe.pl</a></li>
+<li><a href="../../bin/example-subscribe-handler.pl">example-subscribe-handler.pl</a></li>
+<li><a href="../../bin/example-check.pl">example-check.pl</a></li>
+<li><a href="../../bin/example-information.pl">example-information.pl</a></li>
+<li><a href="../../bin/example-getsatellitelist.pl">example-getsatellitelist.pl</a></li>
+<li><a href="../../bin/example-tracker.pl">example-tracker.pl</a></li>
+<li><a href="../../bin/example-tracker-http.pl">example-tracker-http.pl</a></li>
+<li><a href="../../bin/example-tracker-text.pl">example-tracker-text.pl</a></li>
 </ul>
 
 =end html

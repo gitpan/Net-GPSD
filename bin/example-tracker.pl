@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-example-tracker - Net::GPSD subscribe method example with custom handler this verson filters gpsd data based on time, distance and track.
+example-tracker.pl - Net::GPSD subscribe method example with custom handler this verson filters gpsd data based on time, distance and track.
 
 =cut
 

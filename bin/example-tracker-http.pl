@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-example-tracker-http - Net::GPSD::Report::http example
+example-tracker-http.pl - Net::GPSD::Report::http example
 
 =cut
 

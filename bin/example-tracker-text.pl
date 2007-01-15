@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-example-tracker-text - Net::GPSD example
+example-tracker-text.pl - Net::GPSD example
 
 =cut
 

@@ -28,8 +28,9 @@ or to use Net::GPSD::Point objects in you own code.
 
 use strict;
 use vars qw($VERSION);
+use Geo::Functions qw{knots_mps};
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.30} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.35} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -266,7 +267,7 @@ sub heading {
 
 =head2 speed
 
-Returns Speed (%f, meters/sec). Note: older versions of the O command reported this field in knots. (maps to gpsd O command tenth data element)
+Returns speed (%f, meters/sec). Note: older versions of the O command reported this field in knots. (maps to gpsd O command tenth data element)
 
   my $speed=$point->speed;
 
@@ -276,6 +277,19 @@ sub speed {
   my $self = shift();
   if (@_) { $self->{'O'}->[9] = shift() } #sets value
   return q2u $self->{'O'}->[9];
+}
+
+=head2 speed_knots
+
+Returns speed in knots
+
+  my $speed=$point->speed_knots;
+
+=cut
+
+sub speed_knots {
+  my $self = shift();
+  return $self->speed eq '?' ? '?' : knots_mps($self->speed);
 }
 
 =head2 climb

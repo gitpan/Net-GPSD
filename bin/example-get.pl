@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-example-get - Net::GPSD get method example
+example-get.pl - Net::GPSD get method example
 
 =cut
 
@@ -34,3 +34,15 @@ foreach (0..5) {
   }
   sleep 1;
 }
+
+__END__
+
+=head1 SAMPLE OUTPUT
+
+  mode|time|lat|lon|alt|speed|heading
+  3|1168726531.070|53.527167|-113.530166|700.80|0.074|0.0000
+  3|1168726531.070|53.527167|-113.530166|700.80|0.074|0.0000
+  3|1168726531.070|53.527167|-113.530166|700.80|0.074|0.0000
+  3|1168726531.070|53.527167|-113.530166|700.80|0.074|0.0000
+
+=cut

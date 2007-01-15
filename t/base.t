@@ -6,7 +6,7 @@
 # Author: Michael R. Davis
 #
 
-=head1 Test Examples
+=head1 NAME
 
 base.t - Good examples concerning how to use this module
 

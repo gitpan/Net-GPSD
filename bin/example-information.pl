@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-example-information - Net::GPSD example to get gpsd server and perl module information
+example-information.pl - Net::GPSD example to get gpsd server and perl module information
 
 =cut
 
@@ -16,13 +16,30 @@ $port||=q{2947};
 
 my $gps=Net::GPSD->new(host=>$host, port=>$port) || die("Error: Cannot connect to the gpsd server");
 
-print "Net::GPSD Version:\t", $gps->VERSION. "\n";
-print "gpsd Version:\t\t", $gps->daemon. "\n";
-print "gpsd Commands:\t\t", $gps->commands. "\n";
-print "Host:\t\t\t", $gps->host. "\n";
-print "Port:\t\t\t", $gps->port. "\n";
-print "Baud:\t\t\t", $gps->baud. "\n";
-print "Rate:\t\t\t", $gps->rate. "\n";
-print "Device:\t\t\t", $gps->device. "\n";
-print "ID:\t\t\t", $gps->id. "\n";
-print "Protocol:\t\t", $gps->protocol. "\n";
+print "Net::GPSD Version:\t", $gps->VERSION ||"N/A", "\n";
+print "gpsd Version:     \t", $gps->daemon  ||"N/A", "\n";
+print "gpsd Commands:    \t", $gps->commands||"N/A", "\n";
+print "Host:             \t", $gps->host    ||"N/A", "\n";
+print "Port:             \t", $gps->port    ||"N/A", "\n";
+print "Baud:             \t", $gps->baud    ||"N/A", "\n";
+print "Rate:             \t", $gps->rate    ||"N/A", "\n";
+print "Device:           \t", $gps->device  ||"N/A", "\n";
+print "ID:               \t", $gps->id      ||"N/A", "\n";
+print "Protocol:         \t", $gps->protocol||"N/A", "\n";
+
+__END__
+
+=head1 SAMPLE OUTPUT
+
+  Net::GPSD Version:      0.34
+  gpsd Version:           2.34
+  gpsd Commands:          abcdefgijklmnopqrstuvwxyz
+  Host:                   gpsd.mainframe.cx
+  Port:                   2947
+  Baud:                   N/A
+  Rate:                   1.00
+  Device:                 /dev/cuaU0
+  ID:                     SiRF
+  Protocol:               3
+
+=cut

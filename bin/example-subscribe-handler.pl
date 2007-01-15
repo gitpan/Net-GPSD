@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-example-subscribe - Net::GPSD subscribe method example
+example-subscribe.pl - Net::GPSD subscribe method example
 
 =cut
 
@@ -29,3 +29,16 @@ sub point_handler {
   return $last_return + 1; #Return a true scalar type e.g. $a, {}, []
                            #try the interesting return of $point
 }
+
+__END__
+
+=head1 SAMPLE OUTPUT
+
+  1 53.527161 -113.530168
+  2 53.527161 -113.530168
+  3 53.527149 -113.530162
+  4 53.527149 -113.530162
+  5 53.527146 -113.530142
+  6 53.527151 -113.530142
+
+=cut

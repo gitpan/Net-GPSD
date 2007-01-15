@@ -1,3 +1,5 @@
+2006-01-15 v0.35
+  * Added Net::GPSD->speed_knots method
 2006-01-03 v0.34
   * Added extensions to example scripts
 2006-12-17 v0.31

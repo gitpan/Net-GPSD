@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-example-subscribe - Net::GPSD subscribe method example
+example-subscribe.pl - Net::GPSD subscribe method example
 
 =cut
 
