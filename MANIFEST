@@ -1,6 +1,7 @@
 bin/example-check.pl
 bin/example-get.pl
 bin/example-getsatellitelist.pl
+bin/example-googleearth.cgi
 bin/example-information.pl
 bin/example-subscribe-handler.pl
 bin/example-subscribe.pl

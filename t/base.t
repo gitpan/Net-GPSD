@@ -38,7 +38,7 @@ BEGIN {
     }
 }
 
-BEGIN { plan tests => 50 }
+BEGIN { plan tests => 53 }
 
 # just check that all modules can be compiled
 ok(eval {require Net::GPSD; 1}, 1, $@);
@@ -49,6 +49,12 @@ ok(eval {require Net::GPSD::Report::http; 1}, 1, $@);
 my $g = Net::GPSD->new(do_not_init=>1);
 ok(ref $g, "Net::GPSD");
 ok($g->host, "localhost");
+$g->host('127.0.0.1');
+ok($g->host, "127.0.0.1");
+ok($g->port, "2947");
+$g->port(2948);
+ok($g->port, "2948");
+$g->port(2947);
 ok($g->port, "2947");
 
 my $p = Net::GPSD::Point->new();

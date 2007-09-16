@@ -38,7 +38,7 @@ use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.35} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.36} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -216,7 +216,7 @@ sub parse {
 
 =head2 host
 
-Returns the current gpsd host.
+Sets or returns the current gpsd host.
 
  my $host=$obj->host;
 
@@ -224,12 +224,15 @@ Returns the current gpsd host.
 
 sub host {
   my $self = shift();
+  if (@_) {
+    $self->{'host'} = shift();
+  }
   return $self->{'host'};
 }
 
 =head2 port
 
-Returns the current gpsd TCP port.
+Sets or returns the current gpsd TCP port.
 
  my $port=$obj->port;
 
@@ -237,6 +240,9 @@ Returns the current gpsd TCP port.
 
 sub port {
   my $self = shift();
+  if (@_) {
+    $self->{'port'} = shift();
+  }
   return $self->{'port'};
 }
 

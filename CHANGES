@@ -1,3 +1,7 @@
+2007-09-15 v0.36
+  * Added set to Net::GPSD->host and Net::GPSD->port methods
+  * Updated Net::GPSD->speed_knots method
+  * Added example-googleearth.cgi
 2006-01-15 v0.35
   * Added Net::GPSD->speed_knots method
 2006-01-03 v0.34

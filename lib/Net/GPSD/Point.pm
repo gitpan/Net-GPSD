@@ -28,7 +28,7 @@ or to use Net::GPSD::Point objects in you own code.
 
 use strict;
 use vars qw($VERSION);
-use Geo::Functions qw{knots_mps};
+use Geo::Functions qw{knots_mps mps_knots};
 
 $VERSION = sprintf("%d.%02d", q{Revision: 0.35} =~ /(\d+)\.(\d+)/);
 
@@ -289,7 +289,8 @@ Returns speed in knots
 
 sub speed_knots {
   my $self = shift();
-  return $self->speed eq '?' ? '?' : knots_mps($self->speed);
+  if (@_) { $self->{'O'}->[9] = mps_knots(shift()) } #sets value
+  return defined($self->speed) ? knots_mps($self->speed) : undef();
 }
 
 =head2 climb
