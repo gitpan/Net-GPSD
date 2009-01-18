@@ -38,7 +38,7 @@ use IO::Socket::INET;
 use Net::GPSD::Point;
 use Net::GPSD::Satellite;
 
-$VERSION = sprintf("%d.%02d", q{Revision: 0.36} =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q{Revision: 0.37} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -192,9 +192,11 @@ sub retrieve {
 
 sub open {
   my $self=shift();
-  my $sock = IO::Socket::INET->new(PeerAddr => $self->host,
-                                   PeerPort => $self->port);
-  return $sock;
+  if (! defined($self->{'sock'}) || ! defined($self->{'sock'}->connected())) {
+    $self->{'sock'} = IO::Socket::INET->new(PeerAddr => $self->host,
+                                            PeerPort => $self->port);
+  }
+  return $self->{'sock'};
 }
 
 sub parse {

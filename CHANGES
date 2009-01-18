@@ -1,3 +1,5 @@
+2009-01-18 v0.37
+  * Added socket caching (Bug RT 38406)
 2007-09-15 v0.36
   * Added set to Net::GPSD->host and Net::GPSD->port methods
   * Updated Net::GPSD->speed_knots method
