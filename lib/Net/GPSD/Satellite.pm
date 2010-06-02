@@ -1,6 +1,9 @@
 package Net::GPSD::Satellite;
+use strict;
+use warnings;
+use GPS::OID;
 
-=pod
+our $VERSION='0.39';
 
 =head1 NAME
 
@@ -40,14 +43,6 @@ or to create a satelite object
 
 =head1 DESCRIPTION
 
-=cut
-
-use strict;
-use vars qw($VERSION);
-use GPS::PRN;
-
-$VERSION = sprintf("%d.%02d", q{Revision: 0.33} =~ /(\d+)\.(\d+)/);
-
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -67,11 +62,13 @@ sub new {
 
 =head1 METHODS
 
+=head2 initialize
+
 =cut
 
 sub initialize {
   my $self = shift();
-  $self->{'gpsprn'}=GPS::PRN->new();
+  $self->{'gpsprn'}=GPS::OID->new();
   if (scalar(@_)) {
     $self->prn(shift());
     $self->elevation(shift());
@@ -103,7 +100,7 @@ sub prn {
 
 =head2 oid
 
-Returns the Satellite Object ID from the GPS::PRN package.
+Returns the Satellite Object ID from the GPS::OID package.
 
   $obj->oid(22216); 
   my $oid=$obj->oid; 
@@ -119,7 +116,7 @@ sub oid {
   return $self->{'oid'};
 }
 
-=head2 elevation (aka elev)
+=head2 elevation, elev
 
 Returns the satellite elevation, 0 to 90 degrees.
 
@@ -128,18 +125,15 @@ Returns the satellite elevation, 0 to 90 degrees.
 
 =cut
 
+*elev=\&elevation;
+
 sub elevation {
   my $self = shift();
   if (@_) { $self->{'elevation'} = shift() } #sets value
   return $self->{'elevation'};
 }
 
-sub elev {
-  my $self = shift();
-  return $self->elevation(@_);
-}
-
-=head2 azimuth (aka azim)
+=head2 azimuth, azim
 
 Returns the satellite azimuth, 0 to 359 degrees.
 
@@ -148,15 +142,12 @@ Returns the satellite azimuth, 0 to 359 degrees.
 
 =cut
 
+*azim=\&azimuth;
+
 sub azimuth {
   my $self = shift();
   if (@_) { $self->{'azimuth'} = shift() } #sets value
   return $self->{'azimuth'};
-}
-
-sub azim {
-  my $self = shift();
-  return $self->azimuth(@_);
 }
 
 =head2 snr
@@ -189,23 +180,24 @@ sub used {
   return $self->{'used'};
 }
 
+=head2 q2u
+
+=cut
+
 sub q2u {
   my $a=shift();
   return $a eq '?' ? undef() : $a;
 }
 
-1;
-__END__
-
-=head1 GETTING STARTED
-
-=head1 KNOWN LIMITATIONS
+=head1 LIMITATIONS
 
 =head1 BUGS
 
-No known bugs.
+Email author and submit to RT.
 
-=head1 EXAMPLES
+=head1 SUPPORT
+
+DavisNetworks.com supports all Perl applications including this package.
 
 =head1 AUTHOR
 
@@ -220,3 +212,5 @@ This library is free software; you can redistribute it and/or modify it under th
 =head1 SEE ALSO
 
 =cut
+
+1;

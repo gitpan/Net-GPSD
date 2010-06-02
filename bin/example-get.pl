@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 =head1 NAME
 
@@ -7,7 +7,7 @@ example-get.pl - Net::GPSD get method example
 =cut
 
 use strict;
-use lib qw{./lib ../lib};
+use warnings;
 use Net::GPSD;
 
 my ($host,$port)=split(q{:}, shift()||'');

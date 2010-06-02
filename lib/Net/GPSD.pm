@@ -1,6 +1,11 @@
 package Net::GPSD;
+use strict;
+use warnings;
+use IO::Socket::INET;
+use Net::GPSD::Point;
+use Net::GPSD::Satellite;
 
-=pod
+our $VERSION='0.39';
 
 =head1 NAME
 
@@ -21,6 +26,8 @@ or
 
 =head1 DESCRIPTION
 
+Note: This package supports the older version 2 protocol.  It works for gpsd versions less than 3.00.  However, for all versions of the gpsd deamon greater than 2.90 you should use the version 3 protocol supported by L<Net::GPSD3>.
+
 Net::GPSD provides an object client interface to the gpsd server daemon.  gpsd is an open source GPS deamon from http://gpsd.berlios.de/.
 
 For example the get method returns a blessed hash reference like
@@ -29,16 +36,6 @@ For example the get method returns a blessed hash reference like
   P=>[lat,lon]}
 
 Fortunately, there are various methods that hide this hash from the user.
-
-=cut
-
-use strict;
-use vars qw($VERSION);
-use IO::Socket::INET;
-use Net::GPSD::Point;
-use Net::GPSD::Satellite;
-
-$VERSION = sprintf("%d.%02d", q{Revision: 0.37} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -60,6 +57,8 @@ sub new {
 }
 
 =head1 METHODS
+
+=head2 initialize
 
 =cut
 
@@ -128,6 +127,10 @@ sub subscribe {
   }
 }
 
+=head2 default_point_handler
+
+=cut
+
 sub default_point_handler {
   my $p1=shift(); #last return or undef if first
   my $p2=shift(); #current fix
@@ -135,6 +138,10 @@ sub default_point_handler {
   print $p2->latlon. "\n";
   return $p2;
 }
+
+=head2 default_satellitelist_handler
+
+=cut
 
 sub default_satellitelist_handler {
   my $sl=shift();
@@ -175,6 +182,10 @@ sub getsatellitelist {
   return wantarray ? @list : \@list;
 }
 
+=head2 retrieve
+
+=cut
+
 sub retrieve {
   my $self=shift();
   my $string=shift();
@@ -190,6 +201,10 @@ sub retrieve {
   }
 }
 
+=head2 open
+
+=cut
+
 sub open {
   my $self=shift();
   if (! defined($self->{'sock'}) || ! defined($self->{'sock'}->connected())) {
@@ -198,6 +213,10 @@ sub open {
   }
   return $self->{'sock'};
 }
+
+=head2 parse
+
+=cut
 
 sub parse {
   my $self=shift();
@@ -300,6 +319,10 @@ sub identification {
   my $self = shift();
   return q2u $self->{'I'}->[0];
 }
+
+=head2 id
+
+=cut
 
 sub id {
   my $self = shift();
@@ -415,29 +438,30 @@ sub track {
   return $p2;
 }
 
+=head2 q2u
+
+=cut
+
 sub q2u {
   my $a=shift();
   return $a eq '?' ? undef() : $a;
 }
 
-1;
-__END__
-
 =head1 GETTING STARTED
 
 Try the examples in the bin folder.  Most every method has a default which is most likely what you will want.
 
-=head1 KNOWN LIMITATIONS
+=head1 LIMITATIONS
 
 The distance function is Geo::Inverse.
 
-The track function is Geo::Forward.
+The track function uses Geo::Forward.
 
 All units are degrees, meters, seconds.
 
 =head1 BUGS
 
-No known bugs.
+Email the author and log on RT.
 
 =head1 EXAMPLES
 
@@ -457,6 +481,10 @@ No known bugs.
 
 =end html
 
+=head1 SUPPORT
+
+DavisNetworks.com supports all Perl applications including this package.
+
 =head1 AUTHOR
 
 Michael R. Davis, qw/gpsd michaelrdavis com/
@@ -469,7 +497,8 @@ This library is free software; you can redistribute it and/or modify it under th
 
 =head1 SEE ALSO
 
-Geo::Inverse
-Geo::Forward
+L<Geo::Inverse>, L<Geo::Forward>
 
 =cut
+
+1;

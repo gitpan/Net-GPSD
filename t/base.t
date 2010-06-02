@@ -1,20 +1,5 @@
-#!/usr/bin/perl -w
 # -*- perl -*-
 
-#
-# $Id: base.t,v 0.1 2006/02/21 eserte Exp $
-# Author: Michael R. Davis
-#
-
-=head1 NAME
-
-base.t - Good examples concerning how to use this module
-
-=cut
-
-use strict;
-use lib q{lib};
-use lib q{../lib};
 use constant NEAR_DEFAULT => 7;
 
 sub near {
@@ -63,7 +48,7 @@ ok(ref $p, "Net::GPSD::Point");
 my $s = Net::GPSD::Satellite->new();
 ok(ref $s, "Net::GPSD::Satellite");
 
-my $gpsprn=GPS::PRN->new();
+my $gpsprn=GPS::OID->new();
 my $oid21=$gpsprn->oid_prn(21); #oid not static cannot hard code
 my $oid23=$gpsprn->oid_prn(23); #oid not static cannot hard code
 

@@ -1,6 +1,9 @@
 package Net::GPSD::Report::http;
+use strict;
+use warnings;
+use LWP::UserAgent;
 
-=pod
+our $VERSION="0.39";
 
 =head1 NAME
 
@@ -13,13 +16,6 @@ Net::GPSD::Report::http - Provides a perl interface to report position data.
   my $return=$obj->send(\%data);
 
 =head1 DESCRIPTION
-
-=cut
-
-use strict;
-use vars qw($VERSION);
-
-$VERSION = sprintf("%d.%02d", q{Revision: 0.30} =~ /(\d+)\.(\d+)/);
 
 =head1 CONSTRUCTOR
 
@@ -39,6 +35,8 @@ sub new {
 }
 
 =head1 METHODS
+
+=head2 initialize
 
 =cut
 
@@ -78,25 +76,20 @@ sub url {
 sub send {
   my $self=shift();
   my $data=shift(); #{}
-  use LWP::UserAgent;
   my $ua=LWP::UserAgent->new();
   my $res = $ua->post($self->url, $data);
   return $res->is_success ? $res->content : undef();
 }
 
-1;
-
-__END__
-
-=head1 GETTING STARTED
-
-=head1 KNOWN LIMITATIONS
+=head1 LIMITATIONS
 
 =head1 BUGS
 
-No known bugs.
+Email the author and log on RT.
 
-=head1 EXAMPLES
+=head1 SUPPPORT
+
+DavisNetworks.com supports all Perl applications including this package.
 
 =head1 AUTHOR
 
@@ -110,10 +103,8 @@ This library is free software; you can redistribute it and/or modify it under th
 
 =head1 SEE ALSO
 
-http://maps.davisnetworks.com/tracking/position_report.cgi
-
-http://maps.davisnetworks.com/tracking/display_device.cgi
-
-LWP::UserAgent
+L<LWP::UserAgent>
 
 =cut
+
+1;

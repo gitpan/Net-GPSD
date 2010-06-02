@@ -1,6 +1,9 @@
 package Net::GPSD::Point;
+use strict;
+use warnings;
+use Geo::Functions qw{knots_mps mps_knots};
 
-=pod
+our $VERSION='0.39';
 
 =head1 NAME
 
@@ -24,14 +27,6 @@ or to use Net::GPSD::Point objects in you own code.
 
 =head1 DESCRIPTION
 
-=cut
-
-use strict;
-use vars qw($VERSION);
-use Geo::Functions qw{knots_mps mps_knots};
-
-$VERSION = sprintf("%d.%02d", q{Revision: 0.35} =~ /(\d+)\.(\d+)/);
-
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -50,6 +45,8 @@ sub new {
 }
 
 =head1 METHODS
+
+=head2 initialize
 
 =cut
 
@@ -363,6 +360,10 @@ sub mode {
   return q2u(defined($self->{'O'}->[14]) ? $self->{'O'}->[14] : $self->{'M'}->[0]);
 }
 
+=head2 q2u
+
+=cut
+
 sub q2u {
   my $a=shift();
   return defined($a) ? ($a eq '?' ? undef() : $a) : undef();
@@ -372,15 +373,17 @@ sub q2u {
 
 __END__
 
-=head1 GETTING STARTED
-
-=head1 KNOWN LIMITATIONS
+=head1 LIMITATIONS
 
 The object allows users to set values for each method but, most likely, this is not what most users will want.
 
+=head1 SUPPORT
+
+DavisNetworks.com supports all Perl applications including this package.
+
 =head1 BUGS
 
-No known bugs.
+Email to author and submit to RT.
 
 =head1 EXAMPLES
 
@@ -396,6 +399,6 @@ This library is free software; you can redistribute it and/or modify it under th
 
 =head1 SEE ALSO
 
-Geo::Point
+L<Geo::Point>, L<Net::GPSD>
 
 =cut
